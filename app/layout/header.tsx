@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import Link from "next/link"
 import { Phone, Menu, X } from "lucide-react"
 
 const Header = () => {
@@ -13,7 +14,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
           <div className="text-xl sm:text-2xl font-bold tracking-widest flex-shrink-0">
-            SIMCOE<span className="font-light">WOODS</span>
+            <Link href="/">SIMCOE<span className="font-light">WOODS</span></Link>
           </div>
 
           {/* Desktop Navigation */}

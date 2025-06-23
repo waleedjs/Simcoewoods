@@ -10,19 +10,18 @@ const AboutSection = () => (
           <p className="text-gray-600 leading-relaxed">
             Welcome to Simcoe Woods, a premium collection of singles and townhomes at Benson Street and Webster
             Boulevard. Discover your perfect home crafted by award-winning builders in the heart of Innisfil. This new
-            community combines luxury, accessibility, and natural beauty, making it a standout development for
-            families, professionals, and investors.
+            community combines luxury, accessibility, and natural beauty, making it a standout development for families,
+            professionals, and investors.
           </p>
           <div className="text-center mt-8">
             <a
               href="#contact"
-              className="bg-black text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-800 transition-colors"
-            >
+              className="bg-black text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-800 transition-colors">
               Register Your Interest
             </a>
           </div>
         </div>
-        <div>
+        <div className="flex justify-end items-center">
           <Image
             src="/images/hero2.jpg"
             width={600}

@@ -14,7 +14,7 @@ import ExploreSection from "./components/explore";
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-white font-sans text-gray-800">
+    <main className="min-h-screen overflow-x-hidden bg-white font-sans text-gray-800">
       <HeroSection />
       <div className="bg-[#FBF9F6]">
         <AboutSection />
