@@ -6,10 +6,10 @@ const HeroSection = () => (
     {/* Background Image with Dark Overlay */}
     <div className="absolute inset-0">
       <Image
-        src="/images/hero.png"
+        src="/images/hero-bg.jpg"
         alt="Architectural rendering of Simcoe Woods"
         fill
-        className="object-cover opacity-70"
+        className="object-cover opacity-60"
       />
     </div>
 
