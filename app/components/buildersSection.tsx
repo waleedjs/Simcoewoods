@@ -8,7 +8,7 @@ const BuildersSection = () => (
         {/* Rosehaven Homes */}
         <div className="text-center flex flex-col items-center justify-center">
           <Image
-            src="/images/rosehaven-Homes.webp"
+            src="/images/builder-logo.webp"
             width={200}
             height={100}
             alt="Rosehaven Homes Logo"
