@@ -10,11 +10,13 @@ const ImageSlider = () => {
   const [modalImage, setModalImage] = useState<string | null>(null);
 
   const images = [
-    { src: "/images/hero2.jpg", title: "Dining" },
-    { src: "/images/hero2.jpg", title: "Friday Harbour" },
-    { src: "/images/hero2.jpg", title: "Shopping" },
-    { src: "/images/hero2.jpg", title: "Trails & Nature" },
-    { src: "/images/hero2.jpg", title: "Beaches" },
+    { src: "/images/friday-harbour.webp", title: "Friday Harbour" },
+    { src: "/images/shopping.webp", title: "Shopping" },
+    { src: "/images/food-truck.webp", title: "Food Truck" },
+    { src: "/images/ideal-lab.webp", title: "IdealLab and Library" },
+    { src: "/images/beach-park.webp", title: "Innisfil Beach Park" },
+    { src: "/images/beach-park2.webp", title: "Innisfil Beach Park" },
+    { src: "/images/alcona-glen.webp", title: "Alcona Glen Elementary School" },
   ];
 
   const settings = {
@@ -61,8 +63,7 @@ const ImageSlider = () => {
           <div key={index} className="px-3">
             <div
               className="relative cursor-pointer overflow-hidden rounded-md group"
-              onClick={() => openModal(image.src)}
-            >
+              onClick={() => openModal(image.src)}>
               <Image
                 src={image.src}
                 alt={image.title}
@@ -81,14 +82,12 @@ const ImageSlider = () => {
       {modalImage && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-          onClick={closeModal}
-        >
+          onClick={closeModal}>
           <div className="relative max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={closeModal}
               className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-200 transition"
-              aria-label="Close"
-            >
+              aria-label="Close">
               ✕
             </button>
             <Image
