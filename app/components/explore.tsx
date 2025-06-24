@@ -1,22 +1,51 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
+// Custom Arrow Components
+type ArrowProps = {
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+};
+
+const PrevArrow = ({ onClick }: ArrowProps) => (
+  <button
+    onClick={onClick}
+    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-md hover:bg-gray-200 transition"
+    aria-label="Previous Slide"
+  >
+    <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+);
+
+const NextArrow = ({ onClick }: ArrowProps) => (
+  <button
+    onClick={onClick}
+    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-md hover:bg-gray-200 transition"
+    aria-label="Next Slide"
+  >
+    <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+);
 
 const ImageSlider = () => {
   const [modalImage, setModalImage] = useState<string | null>(null);
 
   const images = [
-    { src: "/images/friday-harbour.webp", title: "Friday Harbour" },
-    { src: "/images/shopping.webp", title: "Shopping" },
-    { src: "/images/food-truck.webp", title: "Food Truck" },
-    { src: "/images/ideal-lab.webp", title: "IdealLab and Library" },
-    { src: "/images/beach-park.webp", title: "Innisfil Beach Park" },
-    { src: "/images/beach-park2.webp", title: "Innisfil Beach Park" },
-    { src: "/images/alcona-glen.webp", title: "Alcona Glen Elementary School" },
+    { src: '/images/friday-harbour.webp', title: 'Friday Harbour' },
+    { src: '/images/shopping.webp', title: 'Shopping' },
+    { src: '/images/food-truck.webp', title: 'Food Truck' },
+    { src: '/images/ideal-lab.webp', title: 'IdealLab and Library' },
+    { src: '/images/beach-park.webp', title: 'Innisfil Beach Park' },
+    { src: '/images/beach-park2.webp', title: 'Innisfil Beach Park' },
+    { src: '/images/alcona-glen.webp', title: 'Alcona Glen Elementary School' },
   ];
 
   const settings = {
@@ -25,17 +54,23 @@ const ImageSlider = () => {
     speed: 500,
     slidesToShow: 3,
     centerMode: true,
-    centerPadding: "40px",
+    centerPadding: '40px',
+    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow />,
     responsive: [
       {
         breakpoint: 1024,
-        settings: { slidesToShow: 2, centerPadding: "20px" },
+        settings: { slidesToShow: 2, centerPadding: '20px' },
       },
       {
         breakpoint: 600,
-        settings: { slidesToShow: 1, centerPadding: "0px" },
+        settings: { slidesToShow: 1, centerPadding: '0px' },
       },
     ],
+    customPaging: () => (
+      <div className="w-4 h-2 bg-gray-400 rounded-full mt-4 transition-all duration-300 slick-active:w-[20px] slick-active:bg-teal-600"></div>
+    ),
+    dotsClass: 'slick-dots flex justify-center space-x-1 mt-4',
   };
 
   const openModal = (src: string) => {
@@ -48,10 +83,10 @@ const ImageSlider = () => {
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeModal();
+      if (e.key === 'Escape') closeModal();
     };
-    document.addEventListener("keydown", handleEsc);
-    return () => document.removeEventListener("keydown", handleEsc);
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
   }, []);
 
   return (
@@ -63,7 +98,8 @@ const ImageSlider = () => {
           <div key={index} className="px-3">
             <div
               className="relative cursor-pointer overflow-hidden rounded-md group"
-              onClick={() => openModal(image.src)}>
+              onClick={() => openModal(image.src)}
+            >
               <Image
                 src={image.src}
                 alt={image.title}
@@ -82,12 +118,14 @@ const ImageSlider = () => {
       {modalImage && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-          onClick={closeModal}>
+          onClick={closeModal}
+        >
           <div className="relative max-w-4xl w-full px-4" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={closeModal}
               className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-200 transition"
-              aria-label="Close">
+              aria-label="Close"
+            >
               ✕
             </button>
             <Image
