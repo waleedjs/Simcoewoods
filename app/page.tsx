@@ -1,8 +1,14 @@
 
-"use client";
+import type { Metadata } from "next";
 
+//  Page metadata
+export const metadata: Metadata = {
+  title: "Simcoe Woods – Modern Living in Nature",
+  description:
+    "Discover Simcoe Woods, a serene and modern residential community nestled in nature with top-notch amenities and ideal location.",
+  keywords: ["Simcoe Woods", "Real Estate", "Modern Homes", "Nature Living", "Amenities", "New Development"],
+};
 
-// Import all components
 import HeroSection from "./components/hersoSection";
 import AboutSection from "./components/aboutSection";
 import LocationSection from "./components/locationSection";

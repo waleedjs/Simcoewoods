@@ -54,7 +54,7 @@ export default function SimcoeWoodsForm() {
     }
   };
 
-  // NEW: Function to check if the current step is valid
+  // Function to check if the current step is valid
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
@@ -88,7 +88,8 @@ export default function SimcoeWoodsForm() {
           formData.secondPurchaserEmail.trim() !== '' &&
           formData.secondPurchaserStreetAddress.trim() !== '' &&
           formData.secondPurchaserCity.trim() !== '' &&
-          formData.secondPurchaserPostalCode.trim() !== ''
+          formData.secondPurchaserPostalCode.trim() !== '' &&
+          formData.secondPurchaserProvince.trim() !== ''
         );
       case 8:
         // Validation for the final step depends on whether there's a second purchaser
@@ -106,7 +107,6 @@ export default function SimcoeWoodsForm() {
         return false;
     }
   };
-
 
   // Function to go to the next step
   const handleNext = () => {
@@ -301,6 +301,10 @@ export default function SimcoeWoodsForm() {
                  <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700">(Second Purchaser) Postal Code <span className="text-red-500">*</span></label>
                     <input type="text" name="secondPurchaserPostalCode" value={formData.secondPurchaserPostalCode} onChange={handleChange} placeholder="e.g., L5B 4A9" className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50" required />
+                </div>
+                <div className="md:col-span-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">(Second Purchaser) Province <span className="text-red-500">*</span></label>
+                    <input type="text" name="secondPurchaserProvince" value={formData.secondPurchaserProvince} onChange={handleChange} placeholder="e.g., Ontario" className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50" required />
                 </div>
             </div>
         )}
