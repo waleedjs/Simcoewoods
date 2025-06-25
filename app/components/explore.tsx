@@ -97,7 +97,7 @@ const ImageSlider = () => {
         {images.map((image, index) => (
           <div key={index} className="px-3">
             <div
-              className="relative cursor-pointer overflow-hidden rounded-md group"
+              className="relative cursor-pointer overflow-hidden rounded-xl group"
               onClick={() => openModal(image.src)}
             >
               <Image
@@ -105,7 +105,7 @@ const ImageSlider = () => {
                 alt={image.title}
                 width={500}
                 height={350}
-                className="rounded-md w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                className="rounded-xl w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute bottom-3 left-3 bg-white/80 px-4 py-2 rounded shadow-md">
                 <p className="text-gray-800 font-semibold">{image.title}</p>
@@ -133,7 +133,7 @@ const ImageSlider = () => {
               alt="Modal Image"
               width={1000}
               height={700}
-              className="w-full max-h-[80vh] object-contain rounded-md"
+              className="w-full max-h-[80vh] object-contain rounded-xl"
             />
           </div>
         </div>

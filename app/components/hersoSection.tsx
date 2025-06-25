@@ -29,7 +29,7 @@ const HeroSection = () => (
         <div className="mt-8">
           <a
             href="#facts"
-            className="bg-black text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-800 transition duration-300 shadow-md hover:shadow-xl"
+            className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition duration-300 shadow-md hover:shadow-xl"
           >
             Explore Homes
           </a>

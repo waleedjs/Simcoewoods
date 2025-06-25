@@ -16,7 +16,7 @@ const AboutSection = () => (
           <div className="text-center mt-8">
             <a
               href="#contact"
-              className="bg-black text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-800 transition-colors">
+              className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors">
               Register Your Interest
             </a>
           </div>

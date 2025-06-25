@@ -1,14 +1,42 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
 
-// This is the main component for the multi-step form
+// Interface for the form data
+interface FormData {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  streetAddress: string;
+  city: string;
+  postalCode: string;
+  province: string;
+  occupation: string;
+  employer: string;
+  photoId: File | null;
+  floorPlanNotes: string;
+  hasSecondPurchaser: boolean;
+  secondPurchaserFirstName: string;
+  secondPurchaserLastName: string;
+  secondPurchaserPhone: string;
+  secondPurchaserEmail: string;
+  secondPurchaserStreetAddress: string;
+  secondPurchaserCity: string;
+  secondPurchaserPostalCode: string;
+  secondPurchaserProvince: string;
+  secondPurchaserOccupation: string;
+  secondPurchaserEmployer: string;
+  secondPurchaserPhotoId: File | null;
+  agreedToTerms: boolean;
+}
+
+// Main component for the multi-step form
 export default function SimcoeWoodsForm() {
-  // State to track the current step
   const [currentStep, setCurrentStep] = useState(1);
-
-  // State to hold all the form data in one object
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     phone: "",
@@ -21,8 +49,7 @@ export default function SimcoeWoodsForm() {
     employer: "",
     photoId: null,
     floorPlanNotes: "",
-    hasSecondPurchaser: "", // 'yes' or 'no'
-    // Second Purchaser Fields
+    hasSecondPurchaser: false,
     secondPurchaserFirstName: "",
     secondPurchaserLastName: "",
     secondPurchaserPhone: "",
@@ -34,15 +61,15 @@ export default function SimcoeWoodsForm() {
     secondPurchaserOccupation: "",
     secondPurchaserEmployer: "",
     secondPurchaserPhotoId: null,
-    // Final Step
     agreedToTerms: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  // Total steps in the form if there IS a second purchaser
   const TOTAL_STEPS = 8;
   const FINAL_STEP = 8;
 
-  // Handler for all input changes
+  // Handler for input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
     if (type === "file") {
@@ -71,8 +98,7 @@ export default function SimcoeWoodsForm() {
       case 4:
         return formData.occupation.trim() !== "" && formData.employer.trim() !== "" && formData.photoId !== null;
       case 5:
-        // floorPlanNotes is optional, but hasSecondPurchaser is required.
-        return formData.hasSecondPurchaser !== "";
+        return formData.hasSecondPurchaser !== undefined;
       case 6:
         return formData.secondPurchaserFirstName.trim() !== "" && formData.secondPurchaserLastName.trim() !== "";
       case 7:
@@ -85,17 +111,15 @@ export default function SimcoeWoodsForm() {
           formData.secondPurchaserProvince.trim() !== ""
         );
       case 8:
-        // Validation for the final step depends on whether there's a second purchaser
-        const termsValid = formData.agreedToTerms;
-        if (formData.hasSecondPurchaser === "yes") {
+        if (formData.hasSecondPurchaser === true) {
           return (
             formData.secondPurchaserOccupation.trim() !== "" &&
             formData.secondPurchaserEmployer.trim() !== "" &&
             formData.secondPurchaserPhotoId !== null &&
-            termsValid
+            formData.agreedToTerms
           );
         }
-        return termsValid;
+        return formData.agreedToTerms;
       default:
         return false;
     }
@@ -103,13 +127,10 @@ export default function SimcoeWoodsForm() {
 
   // Function to go to the next step
   const handleNext = () => {
-    // This is the special logic for the "Second Purchaser" step (Step 5)
     if (currentStep === 5) {
-      if (formData.hasSecondPurchaser === "no") {
-        // If 'No', skip directly to the final step
+      if (formData.hasSecondPurchaser === false) {
         setCurrentStep(FINAL_STEP);
       } else {
-        // If 'Yes', proceed to the next step (Step 6)
         setCurrentStep((prev) => prev + 1);
       }
     } else if (currentStep < TOTAL_STEPS) {
@@ -119,33 +140,144 @@ export default function SimcoeWoodsForm() {
 
   // Function to go to the previous step
   const handlePrev = () => {
-    // Special logic to jump back from the final step if we skipped
-    if (currentStep === FINAL_STEP && formData.hasSecondPurchaser === "no") {
-      setCurrentStep(5); // Go back to the question step
+    if (currentStep === FINAL_STEP && formData.hasSecondPurchaser === false) {
+      setCurrentStep(5);
     } else if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
     }
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isStepValid()) {
       alert("Please ensure all required fields are filled and the terms are accepted.");
       return;
     }
-    // Here you would typically send the formData to your server or an API
-    console.log("Form Submitted!", formData);
-    alert("Thank you for your submission! We will be in touch.");
+
+    setIsSubmitting(true);
+
+    const submissionData = new FormData();
+
+    // Common fields (always included)
+    const commonFields = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: formData.phone,
+      email: formData.email,
+      streetAddress: formData.streetAddress,
+      city: formData.city,
+      postalCode: formData.postalCode,
+      province: formData.province,
+      occupation: formData.occupation,
+      employer: formData.employer,
+      floorPlanNotes: formData.floorPlanNotes,
+      hasSecondPurchaser: formData.hasSecondPurchaser.toString(),
+      agreedToTerms: formData.agreedToTerms.toString(),
+    };
+
+    // Append common fields
+    Object.entries(commonFields).forEach(([key, value]) => {
+      submissionData.append(key, value);
+    });
+
+    // Append primary purchaser's photo ID if present
+    if (formData.photoId) {
+      submissionData.append("files", formData.photoId);
+    }
+
+    // Append second purchaser fields only if hasSecondPurchaser is true
+    if (formData.hasSecondPurchaser === true) {
+      const secondPurchaserFields = {
+        secondPurchaserFirstName: formData.secondPurchaserFirstName,
+        secondPurchaserLastName: formData.secondPurchaserLastName,
+        secondPurchaserPhone: formData.secondPurchaserPhone,
+        secondPurchaserEmail: formData.secondPurchaserEmail,
+        secondPurchaserStreetAddress: formData.secondPurchaserStreetAddress,
+        secondPurchaserCity: formData.secondPurchaserCity,
+        secondPurchaserPostalCode: formData.secondPurchaserPostalCode,
+        secondPurchaserProvince: formData.secondPurchaserProvince,
+        secondPurchaserOccupation: formData.secondPurchaserOccupation,
+        secondPurchaserEmployer: formData.secondPurchaserEmployer,
+      };
+
+      Object.entries(secondPurchaserFields).forEach(([key, value]) => {
+        submissionData.append(key, value);
+      });
+
+      if (formData.secondPurchaserPhotoId) {
+        submissionData.append("files", formData.secondPurchaserPhotoId);
+      }
+    }
+
+    try {
+      const response = await axios.post("http://192.168.18.76:2000/forms", submissionData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Server response:", response.data);
+      setIsSuccess(true);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error("Error response data:", error.response.data);
+          console.error("Error status:", error.response.status);
+          console.error("Error headers:", error.response.headers);
+          alert(
+            `Failed to submit the form: ${
+              (error.response.data && (error.response.data as any).message) || error.response.statusText
+            }`
+          );
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+          alert("No response from server. Please check your network.");
+        } else {
+          console.error("Error setting up request:", error.message);
+          alert("Error in setting up the request.");
+        }
+      } else {
+        console.error("Unknown error:", error);
+        alert("An unknown error occurred.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Calculate progress percentage
   const progress = Math.round((currentStep / TOTAL_STEPS) * 100);
 
+  if (isSuccess) {
+    return (
+      <div className=" bg-gray-100 flex flex-col items-center justify-center">
+        <div className="text-center mt-10">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Simcoe Woods Condos Worksheet</h1>
+          <p className="text-gray-600 max-w-3xl mb-8">
+            By completing this worksheet you will be placed in priority sequence for the first release the moment the
+            developer commences the sales event. Floor plans, pricing, and incentives to follow.
+          </p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto text-center">
+          <p className="text-gray-700">
+            We have received your completed worksheet for Chrome Condos Hamilton. You have been placed in a priority
+            sequence. Feel free to call or text at{" "}
+            <a href="tel:+14169947919" className="text-black font-bold hover:underline">
+              416-994-7919
+            </a>{" "}
+            or email at{" "}
+            <a href="mailto:sales@simcoewoods.com" className="text-black font-bold hover:underline">
+              sales@simcoewoods.com
+            </a>{" "}
+            if you have any further questions.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white max-w-3xl mx-auto px-4 xl:py-20 py-6 md:p-10 rounded-lg shadow-sm">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">Simcoe Woods Condos</h1>
-      <p className="text-center text-gray-600 mb-8">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">Simcoe Woods Condos Worksheet</h1>
+      <p className="text-gray-600 mb-8 text-center ">
         By completing this worksheet you will be placed in priority sequence for the first release the moment the
         developer commences the sales event. Floor plans, pricing, and incentives to follow.
       </p>
@@ -368,9 +500,14 @@ export default function SimcoeWoodsForm() {
                   <input
                     type="radio"
                     name="hasSecondPurchaser"
-                    value="yes"
-                    checked={formData.hasSecondPurchaser === "yes"}
-                    onChange={handleChange}
+                    value="true"
+                    checked={formData.hasSecondPurchaser === true}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        hasSecondPurchaser: true,
+                      }))
+                    }
                     className="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500"
                     required
                   />
@@ -380,9 +517,14 @@ export default function SimcoeWoodsForm() {
                   <input
                     type="radio"
                     name="hasSecondPurchaser"
-                    value="no"
-                    checked={formData.hasSecondPurchaser === "no"}
-                    onChange={handleChange}
+                    value="false"
+                    checked={formData.hasSecondPurchaser === false}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        hasSecondPurchaser: false,
+                      }))
+                    }
                     className="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500"
                     required
                   />
@@ -392,9 +534,6 @@ export default function SimcoeWoodsForm() {
             </div>
           </div>
         )}
-
-        {/* === SECOND PURCHASER STEPS === */}
-        {/* These steps only show if 'yes' was selected */}
 
         {/* Step 6: Second Purchaser Name */}
         {currentStep === 6 && (
@@ -523,8 +662,7 @@ export default function SimcoeWoodsForm() {
         {/* Step 8: Final Step - 2nd Purchaser Occupation / OR Final Confirmation */}
         {currentStep === FINAL_STEP && (
           <div>
-            {/* Only show these fields if there IS a second purchaser */}
-            {formData.hasSecondPurchaser === "yes" && (
+            {formData.hasSecondPurchaser === true && (
               <div className="space-y-6 mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -571,7 +709,6 @@ export default function SimcoeWoodsForm() {
               </div>
             )}
 
-            {/* Privacy Policy Agreement */}
             <div className="flex items-start">
               <div className="flex items-center h-5">
                 <input
@@ -597,10 +734,7 @@ export default function SimcoeWoodsForm() {
             </div>
           </div>
         )}
-
-        {/* Navigation Buttons */}
         <div className="mt-10 flex justify-between">
-          {/* Previous Button */}
           {currentStep > 1 && (
             <button
               type="button"
@@ -609,11 +743,7 @@ export default function SimcoeWoodsForm() {
               Previous
             </button>
           )}
-
-          {/* Spacer to push Next/Submit to the right */}
           {currentStep === 1 && <div></div>}
-
-          {/* Next Button */}
           {currentStep < TOTAL_STEPS && (
             <button
               type="button"
@@ -623,14 +753,17 @@ export default function SimcoeWoodsForm() {
               Next
             </button>
           )}
-
-          {/* Submit Button */}
           {currentStep === TOTAL_STEPS && (
             <button
               type="submit"
-              disabled={!isStepValid()}
-              className="py-2 px-6 rounded-md font-semibold bg-black text-white hover:bg-gray-800 disabled:bg-teal-300 disabled:cursor-not-allowed">
-              Submit
+              disabled={!isStepValid() || isSubmitting}
+              className="py-2 px-6 rounded-md font-semibold bg-black text-white hover:bg-gray-800 disabled:bg-teal-300 disabled:cursor-not-allowed relative">
+              {isSubmitting && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                </div>
+              )}
+              <span className={isSubmitting ? "opacity-0" : ""}>Submit</span>
             </button>
           )}
         </div>
