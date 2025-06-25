@@ -757,7 +757,7 @@ export default function SimcoeWoodsForm() {
             <button
               type="submit"
               disabled={!isStepValid() || isSubmitting}
-              className="py-2 px-6 rounded-md font-semibold bg-black text-white hover:bg-gray-800 disabled:bg-teal-300 disabled:cursor-not-allowed relative">
+              className="py-2 px-6 rounded-md font-semibold bg-black text-white hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed relative">
               {isSubmitting && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
